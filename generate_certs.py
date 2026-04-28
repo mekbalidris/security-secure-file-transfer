@@ -26,7 +26,6 @@ SAN_IP_ADDRESSES = ["127.0.0.1"]
 
 
 def generate_private_key() -> rsa.RSAPrivateKey:
-    """Generate an RSA-4096 private key."""
     print("[*] Generating RSA-4096 private key …")
     return rsa.generate_private_key(
         public_exponent=65537,
@@ -35,7 +34,6 @@ def generate_private_key() -> rsa.RSAPrivateKey:
 
 
 def build_certificate(private_key: rsa.RSAPrivateKey) -> x509.Certificate:
-    """Build and self-sign an X.509 v3 certificate."""
     print("[*] Building self-signed X.509 certificate …")
 
     subject = issuer = x509.Name(
@@ -86,7 +84,6 @@ def build_certificate(private_key: rsa.RSAPrivateKey) -> x509.Certificate:
 
 
 def save_key(private_key: rsa.RSAPrivateKey, path: str) -> None:
-    """Serialize and save the private key (no password – add one for prod)."""
     pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.TraditionalOpenSSL,
@@ -99,7 +96,6 @@ def save_key(private_key: rsa.RSAPrivateKey, path: str) -> None:
 
 
 def save_cert(cert: x509.Certificate, path: str) -> None:
-    """Serialize and save the certificate."""
     pem = cert.public_bytes(serialization.Encoding.PEM)
     with open(path, "wb") as fh:
         fh.write(pem)

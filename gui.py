@@ -15,11 +15,11 @@ class SecureFileTransferGUI:
         self.root.geometry("700x500")
         self.root.configure(bg='#000000')
 
-        self.bg_color = '#000000'  # Black
-        self.fg_color = '#00FF00'  # Green
-        self.btn_bg = '#333333'    # Dark gray
-        self.btn_fg = '#00FF00'    # Green
-        self.font = ('Courier New', 10)  # Monospace font
+        self.bg_color = '#000000'
+        self.fg_color = '#00FF00'
+        self.btn_bg = '#333333'
+        self.btn_fg = '#00FF00'
+        self.font = ('Courier New', 10)
         self.title_font = ('Courier New', 14, 'bold')
 
         server_frame = tk.Frame(root, bg=self.bg_color)

@@ -28,7 +28,6 @@ log = logging.getLogger(__name__)
 
 
 def recv_exact(sock: socket.socket, n: int) -> bytes:
-    """Receive exactly *n* bytes, blocking until available or EOF."""
     buf = bytearray()
     while len(buf) < n:
         chunk = sock.recv(n - len(buf))
@@ -41,7 +40,6 @@ def recv_exact(sock: socket.socket, n: int) -> bytes:
 
 
 def send_framed(sock: socket.socket, payload: bytes) -> None:
-    """Send a length-prefixed frame."""
     header = struct.pack(HEADER_FMT, len(payload))
     sock.sendall(header + payload)
 
@@ -49,12 +47,6 @@ def send_framed(sock: socket.socket, payload: bytes) -> None:
 def receive_and_verify_cert(
     sock: socket.socket, trusted_cert_path: str
 ) -> x509.Certificate:
-    """
-    Receive the server certificate and verify it against a locally trusted
-    copy (trust-on-first-use / TOFU model for self-signed certs).
-
-    Raises RuntimeError if verification fails.
-    """
     raw_len = recv_exact(sock, HEADER_SIZE)
     (cert_len,) = struct.unpack(HEADER_FMT, raw_len)
     cert_pem = recv_exact(sock, cert_len)
@@ -87,12 +79,10 @@ def receive_and_verify_cert(
 
 
 def generate_session_key() -> bytes:
-    """Generate a cryptographically secure 256-bit (32-byte) session key."""
     return os.urandom(32)
 
 
 def encrypt_session_key(cert: x509.Certificate, session_key: bytes) -> bytes:
-    """Encrypt the session key with the server's RSA public key (OAEP-SHA256)."""
     pub_key = cert.public_key()
     return pub_key.encrypt(
         session_key,
@@ -105,11 +95,6 @@ def encrypt_session_key(cert: x509.Certificate, session_key: bytes) -> bytes:
 
 
 def encrypt_chunk(aesgcm: AESGCM, plaintext: bytes) -> bytes:
-    """
-    Encrypt a single plaintext chunk.
-    Returns: [12-byte nonce][ciphertext + 16-byte GCM tag]
-    A fresh random nonce is generated for every chunk.
-    """
     nonce = os.urandom(NONCE_SIZE)
     ciphertext = aesgcm.encrypt(nonce, plaintext, None)
     return nonce + ciphertext
@@ -120,7 +105,6 @@ def send_file(
     file_path: str,
     aesgcm: AESGCM,
 ) -> None:
-    """Read *file_path* in chunks, encrypt each, and send as framed messages."""
     filename = os.path.basename(file_path)
     filename_bytes = filename.encode("utf-8")
     if len(filename_bytes) > 0xFFFF:
@@ -154,7 +138,6 @@ def run_client(
     file_path: str,
     trusted_cert_path: str,
 ) -> None:
-    """Connect to the server and transfer the file securely."""
     if not os.path.isfile(file_path):
         log.error("File not found: '%s'", file_path)
         sys.exit(1)

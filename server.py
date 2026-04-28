@@ -29,7 +29,6 @@ log = logging.getLogger(__name__)
 
 
 def recv_exact(sock: socket.socket, n: int) -> bytes:
-    """Receive exactly *n* bytes, blocking until available or EOF."""
     buf = bytearray()
     while len(buf) < n:
         chunk = sock.recv(n - len(buf))
@@ -42,20 +41,17 @@ def recv_exact(sock: socket.socket, n: int) -> bytes:
 
 
 def recv_framed(sock: socket.socket) -> bytes:
-    """Receive a length-prefixed frame and return its payload."""
     raw_len = recv_exact(sock, HEADER_SIZE)
     (frame_len,) = struct.unpack(HEADER_FMT, raw_len)
     return recv_exact(sock, frame_len)
 
 
 def load_private_key(key_path: str):
-    """Load an RSA private key from a PEM file."""
     with open(key_path, "rb") as fh:
         return serialization.load_pem_private_key(fh.read(), password=None)
 
 
 def decrypt_session_key(private_key, ciphertext: bytes) -> bytes:
-    """Decrypt the AES session key using RSA-OAEP-SHA256."""
     return private_key.decrypt(
         ciphertext,
         padding.OAEP(
@@ -67,10 +63,6 @@ def decrypt_session_key(private_key, ciphertext: bytes) -> bytes:
 
 
 def decrypt_chunk(aesgcm: AESGCM, frame: bytes) -> bytes:
-    """
-    Decrypt one chunk frame.
-    Frame layout: [12-byte nonce][ciphertext + 16-byte GCM tag]
-    """
     if len(frame) < NONCE_SIZE:
         raise ValueError("Frame too short to contain a nonce.")
     nonce = frame[:NONCE_SIZE]
@@ -85,7 +77,6 @@ def handle_client(
     cert_pem: bytes,
     output_dir: str,
 ) -> None:
-    """Handle a single client connection end-to-end."""
     peer = f"{addr[0]}:{addr[1]}"
     log.info("Accepted connection from %s", peer)
 
@@ -152,7 +143,6 @@ def run_server(
     key_path: str,
     output_dir: str,
 ) -> None:
-    """Start the server and accept connections in a loop."""
     os.makedirs(output_dir, exist_ok=True)
 
     private_key = load_private_key(key_path)
