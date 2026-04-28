@@ -1,24 +1,3 @@
-"""
-server.py
----------
-Secure File Transfer – Server Side
-
-Protocol (per connection):
-  1. Send the PEM certificate to the client for authentication.
-  2. Receive the RSA-OAEP-encrypted AES-256-GCM session key.
-  3. Decrypt the session key with the RSA private key.
-  4. Receive the file metadata (filename length + filename).
-  5. Receive encrypted chunks; decrypt and write to OUTPUT_DIR.
-  6. Verify the final GCM tag embedded in the last chunk frame.
-
-Chunk frame (network order):
-  [4 bytes: total frame length][12 bytes: GCM nonce][chunk ciphertext + 16-byte GCM tag]
-
-Usage:
-    python server.py [--host HOST] [--port PORT] [--output-dir DIR]
-                     [--cert server.crt] [--key server.key]
-"""
-
 import argparse
 import logging
 import os

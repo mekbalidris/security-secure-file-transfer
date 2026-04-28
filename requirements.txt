@@ -1,5 +1,1 @@
-# requirements.txt
-# Secure File Transfer System
-# Python >= 3.10 required
-
 cryptography>=42.0.0

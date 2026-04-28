@@ -1,17 +1,3 @@
-"""
-generate_certs.py
------------------
-Generates a self-signed RSA-4096 X.509 certificate and private key for the
-server.  Run this ONCE before starting the server.
-
-Usage:
-    python generate_certs.py
-
-Outputs:
-    server.crt  – PEM-encoded X.509 certificate (public, share with clients)
-    server.key  – PEM-encoded RSA-4096 private key  (KEEP SECRET)
-"""
-
 import datetime
 import ipaddress
 import os

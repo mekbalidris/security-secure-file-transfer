@@ -1,24 +1,3 @@
-"""
-client.py
----------
-Secure File Transfer – Client Side
-
-Protocol (per connection):
-  1. Receive the server's PEM certificate and verify it against a trusted copy.
-  2. Generate a cryptographically random 32-byte AES session key.
-  3. Encrypt the session key with the server's RSA-4096 public key (OAEP-SHA256)
-     and send the 512-byte ciphertext.
-  4. Send the destination filename (length-prefixed).
-  5. Encrypt the file in 64 KiB chunks (AES-256-GCM, unique nonce per chunk)
-     and send each chunk as a length-prefixed frame.
-  6. Send an empty sentinel frame to signal end-of-transfer.
-  7. Await the server's "OK" acknowledgement.
-
-Usage:
-    python client.py --file <path> [--host HOST] [--port PORT]
-                     [--trusted-cert server.crt]
-"""
-
 import argparse
 import logging
 import os

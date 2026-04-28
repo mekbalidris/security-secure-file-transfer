@@ -1,11 +1,3 @@
-"""
-gui.py
-------
-Simple GUI for Secure File Transfer System
-
-Provides a graphical interface to run the server and client.
-"""
-
 import subprocess
 import sys
 import threading
@@ -21,9 +13,8 @@ class SecureFileTransferGUI:
         self.root = root
         self.root.title("Secure File Transfer - Hacker Mode")
         self.root.geometry("700x500")
-        self.root.configure(bg='#000000')  # Black background
+        self.root.configure(bg='#000000')
 
-        # Custom styles
         self.bg_color = '#000000'  # Black
         self.fg_color = '#00FF00'  # Green
         self.btn_bg = '#333333'    # Dark gray
@@ -31,7 +22,6 @@ class SecureFileTransferGUI:
         self.font = ('Courier New', 10)  # Monospace font
         self.title_font = ('Courier New', 14, 'bold')
 
-        # Server section
         server_frame = tk.Frame(root, bg=self.bg_color)
         server_frame.pack(pady=10)
 
@@ -43,13 +33,12 @@ class SecureFileTransferGUI:
         self.stop_server_btn = tk.Button(server_frame, text="[STOP SERVER]", command=self.stop_server, state=tk.DISABLED, bg=self.btn_bg, fg=self.btn_fg, font=self.font, relief='raised', bd=2)
         self.stop_server_btn.pack(side=tk.LEFT, padx=10)
 
-        # Client section
         client_frame = tk.Frame(root, bg=self.bg_color)
         client_frame.pack(pady=10)
 
         tk.Label(client_frame, text=">> CLIENT TRANSFER <<", font=self.title_font, fg=self.fg_color, bg=self.bg_color).pack()
 
-        # Selection mode
+
         mode_frame = tk.Frame(client_frame, bg=self.bg_color)
         mode_frame.pack(pady=5)
 
@@ -67,7 +56,6 @@ class SecureFileTransferGUI:
         self.selected_label = tk.Label(client_frame, text="Nothing selected", fg=self.fg_color, bg=self.bg_color, font=self.font)
         self.selected_label.pack(side=tk.LEFT, padx=10)
 
-        # Log area
         log_frame = tk.Frame(root, bg=self.bg_color)
         log_frame.pack(pady=10, fill=tk.BOTH, expand=True)
 
@@ -79,7 +67,6 @@ class SecureFileTransferGUI:
         self.server_process = None
         self.selected_items = None
 
-        # Initial log
         self.log("Initializing secure file transfer system...")
         self.log("Ready for operations.")
 
@@ -155,7 +142,6 @@ class SecureFileTransferGUI:
             if mode == "Single File":
                 file_to_send = self.selected_items[0]
             else:
-                # Create a temp zip
                 temp_zip = tempfile.NamedTemporaryFile(suffix='.zip', delete=False)
                 temp_zip.close()
                 zip_path = temp_zip.name
