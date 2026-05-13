@@ -19,12 +19,30 @@ NONCE_SIZE = 12
 FILENAME_LEN_FMT = ">H"
 FILENAME_LEN_SIZE = struct.calcsize(FILENAME_LEN_FMT)
 
+# Mode verbose pour la démonstration
+VERBOSE_MODE = False
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 log = logging.getLogger(__name__)
+
+
+def log_hex(data: bytes, label: str, max_bytes: int = 32):
+    """Affiche un dump hexadécimal pour la démonstration"""
+    if not VERBOSE_MODE:
+        return
+    hex_str = data[:max_bytes].hex()
+    print(f"\n{'='*70}")
+    print(f"  {label}")
+    print(f"{'='*70}")
+    print(f"Taille: {len(data)} bytes")
+    print(f"Hex: {hex_str}")
+    if len(data) > max_bytes:
+        print(f"... ({len(data) - max_bytes} bytes supplémentaires)")
+    print(f"{'='*70}\n")
 
 
 def recv_exact(sock: socket.socket, n: int) -> bytes:
@@ -50,6 +68,8 @@ def receive_and_verify_cert(
     raw_len = recv_exact(sock, HEADER_SIZE)
     (cert_len,) = struct.unpack(HEADER_FMT, raw_len)
     cert_pem = recv_exact(sock, cert_len)
+    
+    log_hex(cert_pem, "📜 CERTIFICAT REÇU DU SERVEUR", 64)
 
     received_cert = x509.load_pem_x509_certificate(cert_pem)
 
@@ -79,12 +99,14 @@ def receive_and_verify_cert(
 
 
 def generate_session_key() -> bytes:
-    return os.urandom(32)
+    key = os.urandom(32)
+    log_hex(key, "🔑 CLÉ DE SESSION GÉNÉRÉE (256 bits)", 32)
+    return key
 
 
 def encrypt_session_key(cert: x509.Certificate, session_key: bytes) -> bytes:
     pub_key = cert.public_key()
-    return pub_key.encrypt(
+    encrypted = pub_key.encrypt(
         session_key,
         padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -92,12 +114,20 @@ def encrypt_session_key(cert: x509.Certificate, session_key: bytes) -> bytes:
             label=None,
         ),
     )
+    log_hex(encrypted, "🔒 CLÉ DE SESSION CHIFFRÉE (RSA-4096)", 64)
+    return encrypted
 
 
 def encrypt_chunk(aesgcm: AESGCM, plaintext: bytes) -> bytes:
     nonce = os.urandom(NONCE_SIZE)
     ciphertext = aesgcm.encrypt(nonce, plaintext, None)
-    return nonce + ciphertext
+    frame = nonce + ciphertext
+    
+    if VERBOSE_MODE and len(plaintext) <= 64:
+        log_hex(plaintext, "📄 CHUNK EN CLAIR", len(plaintext))
+        log_hex(frame, "🔒 CHUNK CHIFFRÉ (nonce + ct + tag)", len(frame))
+    
+    return frame
 
 
 def send_file(
@@ -202,11 +232,25 @@ def parse_args() -> argparse.Namespace:
         default="server.crt",
         help="Path to the server's trusted certificate (PEM)",
     )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Mode démonstration : affiche les données chiffrées en hexadécimal",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
+    global VERBOSE_MODE
     args = parse_args()
+    VERBOSE_MODE = args.verbose
+    
+    if VERBOSE_MODE:
+        print("\n" + "="*70)
+        print("  MODE DÉMONSTRATION ACTIVÉ")
+        print("  Les données seront affichées en hexadécimal")
+        print("="*70 + "\n")
+    
     run_client(args.host, args.port, args.file, args.trusted_cert)
 
 

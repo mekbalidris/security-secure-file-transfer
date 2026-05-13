@@ -1,0 +1,210 @@
+═══════════════════════════════════════════════════════════════════════
+  GUIDE RAPIDE POUR LA PRÉSENTATION
+  Projet ISEC - Secure File Transfer
+═══════════════════════════════════════════════════════════════════════
+
+🎯 OBJECTIF : Prouver visuellement que le chiffrement fonctionne
+
+═══════════════════════════════════════════════════════════════════════
+  MÉTHODE 1 : DÉMONSTRATION AUTOMATIQUE (LA PLUS SIMPLE)
+═══════════════════════════════════════════════════════════════════════
+
+Commande :
+    python demo_auto.py
+
+Ce que vous verrez :
+    ✅ Clé de session EN CLAIR (32 bytes lisibles)
+    ✅ Clé de session CHIFFRÉE (512 bytes illisibles)
+    ✅ Message EN CLAIR (texte lisible)
+    ✅ Message CHIFFRÉ (binaire illisible)
+    ✅ Fichiers créés : demo_test.txt et demo_test_encrypted.bin
+
+Temps : 2 minutes
+
+═══════════════════════════════════════════════════════════════════════
+  MÉTHODE 2 : COMPARAISON DE FICHIERS
+═══════════════════════════════════════════════════════════════════════
+
+Étape 1 : Ouvrir le fichier original
+    notepad demo_test.txt
+    → Vous verrez : "ISEC Project - Secure File Transfer" (LISIBLE)
+
+Étape 2 : Ouvrir le fichier chiffré
+    notepad demo_test_encrypted.bin
+    → Vous verrez : Caractères bizarres illisibles
+
+Temps : 1 minute
+
+═══════════════════════════════════════════════════════════════════════
+  MÉTHODE 3 : CAPTURE RÉSEAU AVEC WIRESHARK
+═══════════════════════════════════════════════════════════════════════
+
+Étape 1 : Démarrer Wireshark
+    wireshark -i Loopback -k -f "tcp port 9000"
+
+Étape 2 : Lancer le serveur (Terminal 1)
+    python server.py
+
+Étape 3 : Lancer le client (Terminal 2)
+    python client.py --file test_demo.txt
+
+Étape 4 : Dans Wireshark
+    - Clic droit sur un paquet → Follow → TCP Stream
+    - Vous verrez des données binaires illisibles
+
+Temps : 3 minutes
+
+═══════════════════════════════════════════════════════════════════════
+  MÉTHODE 4 : MODE VERBOSE DU CLIENT
+═══════════════════════════════════════════════════════════════════════
+
+Commande :
+    python client.py --file test_demo.txt --verbose
+
+Ce que vous verrez :
+    ✅ Certificat reçu (hexadécimal)
+    ✅ Clé de session générée (hexadécimal)
+    ✅ Clé de session chiffrée (hexadécimal)
+    ✅ Chunks en clair vs chiffrés (hexadécimal)
+
+Temps : 2 minutes
+
+═══════════════════════════════════════════════════════════════════════
+  SCÉNARIO DE PRÉSENTATION RECOMMANDÉ (10 MINUTES)
+═══════════════════════════════════════════════════════════════════════
+
+1. INTRODUCTION (1 min)
+   "Notre projet implémente un protocole de transfert sécurisé
+    utilisant RSA-4096, AES-256-GCM et certificats X.509"
+
+2. DÉMONSTRATION AUTOMATIQUE (2 min)
+   python demo_auto.py
+   → Montrez les hexdumps avant/après chiffrement
+
+3. COMPARAISON DE FICHIERS (1 min)
+   notepad demo_test.txt
+   notepad demo_test_encrypted.bin
+   → Montrez la différence visuelle
+
+4. TRANSFERT RÉEL (2 min)
+   Terminal 1: python server.py
+   Terminal 2: python client.py --file test_demo.txt
+   → Montrez que le fichier arrive dans received_files/
+
+5. WIRESHARK (2 min)
+   → Montrez la capture réseau avec données chiffrées
+
+6. INTERFACE GRAPHIQUE (1 min)
+   python gui.py
+   → Montrez l'envoi d'un fichier via l'interface
+
+7. CONCLUSION (1 min)
+   "Notre implémentation garantit confidentialité, intégrité
+    et authentification conformément au cours ISEC"
+
+═══════════════════════════════════════════════════════════════════════
+  FICHIERS IMPORTANTS
+═══════════════════════════════════════════════════════════════════════
+
+Documentation :
+    ✅ README.md - Documentation complète du projet
+    ✅ FONCTIONNEMENT.md - Explication détaillée du protocole
+    ✅ GUIDE_PRESENTATION.md - Guide complet de présentation
+    ✅ PREUVES_CHIFFREMENT.md - Preuves visuelles du chiffrement
+
+Scripts de démonstration :
+    ✅ demo_auto.py - Démonstration automatique (RECOMMANDÉ)
+    ✅ demo_mode.py - Démonstration interactive
+
+Code source :
+    ✅ generate_certs.py - Génération des certificats
+    ✅ server.py - Serveur de réception
+    ✅ client.py - Client de transfert (avec --verbose)
+    ✅ gui.py - Interface graphique
+
+Fichiers de test :
+    ✅ test_demo.txt - Fichier de test pour la démo
+    ✅ demo_test.txt - Créé par demo_auto.py (LISIBLE)
+    ✅ demo_test_encrypted.bin - Créé par demo_auto.py (ILLISIBLE)
+
+═══════════════════════════════════════════════════════════════════════
+  CHECKLIST AVANT LA PRÉSENTATION
+═══════════════════════════════════════════════════════════════════════
+
+Préparation :
+    [ ] Wireshark installé
+    [ ] Certificats générés (python generate_certs.py)
+    [ ] demo_auto.py testé
+    [ ] Deux terminaux prêts (serveur + client)
+
+Fichiers à montrer :
+    [ ] demo_test.txt (lisible)
+    [ ] demo_test_encrypted.bin (illisible)
+    [ ] Capture Wireshark sauvegardée
+    [ ] Code source commenté
+
+═══════════════════════════════════════════════════════════════════════
+  QUESTIONS PROBABLES DU PROFESSEUR
+═══════════════════════════════════════════════════════════════════════
+
+Q1 : "Comment savez-vous que c'est vraiment chiffré ?"
+R : "Nous avons 4 preuves :
+     1. demo_auto.py montre les hexdumps avant/après
+     2. Les fichiers demo_test.txt vs demo_test_encrypted.bin
+     3. Wireshark montre des données binaires illisibles
+     4. Le mode verbose affiche les données chiffrées en temps réel"
+
+Q2 : "Pourquoi RSA ET AES ?"
+R : "C'est le concept d'enveloppe digitale du cours :
+     - RSA : Sécurise l'échange de la clé de session (lent)
+     - AES : Chiffre les gros fichiers (rapide)
+     C'est exactement comme SSL/TLS"
+
+Q3 : "Comment le client vérifie le serveur ?"
+R : "Par key pinning : le client compare les clés publiques
+     byte par byte. Si différent → attaque MITM détectée"
+
+Q4 : "Pourquoi un nonce par chunk ?"
+R : "Pour la sécurité du mode GCM :
+     Même données + nonce différent = ciphertext différent
+     Empêche l'analyse de patterns"
+
+═══════════════════════════════════════════════════════════════════════
+  COMMANDES RAPIDES
+═══════════════════════════════════════════════════════════════════════
+
+# Génération des certificats
+python generate_certs.py
+
+# Démonstration automatique
+python demo_auto.py
+
+# Serveur
+python server.py
+
+# Client normal
+python client.py --file test_demo.txt
+
+# Client verbose (pour la démo)
+python client.py --file test_demo.txt --verbose
+
+# Interface graphique
+python gui.py
+
+# Wireshark
+wireshark -i Loopback -k -f "tcp port 9000"
+
+═══════════════════════════════════════════════════════════════════════
+  RÉSUMÉ : PREUVES DU CHIFFREMENT
+═══════════════════════════════════════════════════════════════════════
+
+✅ Hexdumps avant/après (demo_auto.py)
+✅ Fichiers lisibles vs illisibles (Notepad)
+✅ Capture réseau (Wireshark)
+✅ Logs verbeux en temps réel (--verbose)
+
+Le professeur VERRA que les données sont chiffrées ! 🔐
+
+═══════════════════════════════════════════════════════════════════════
+
+Bonne présentation ! 🎓

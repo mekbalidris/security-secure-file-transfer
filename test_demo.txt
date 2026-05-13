@@ -1,0 +1,12 @@
+MESSAGE SECRET ISEC 2026
+========================
+
+Ce fichier contient des informations confidentielles pour le projet ISEC.
+
+Concepts implémentés :
+- Cryptographie asymétrique (RSA-4096)
+- Cryptographie symétrique (AES-256-GCM)
+- Certificats numériques X.509
+- Infrastructure PKI
+
+Ce message doit être chiffré lors du transfert réseau !
