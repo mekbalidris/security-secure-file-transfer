@@ -102,14 +102,27 @@ def handle_client(
         if not filename:
             raise ValueError("Received an empty or invalid filename.")
         out_path = os.path.join(output_dir, filename)
+        
+        # Créer aussi un fichier pour la version chiffrée (pour la démo)
+        encrypted_path = os.path.join(output_dir, filename + ".encrypted")
+        
         log.info("[%s] Receiving file: '%s'", peer, filename)
 
         bytes_written = 0
-        with open(out_path, "wb") as out_file:
+        encrypted_bytes_written = 0
+        
+        # Ouvrir les deux fichiers : déchiffré ET chiffré
+        with open(out_path, "wb") as out_file, open(encrypted_path, "wb") as enc_file:
             while True:
                 frame = recv_framed(conn)
                 if len(frame) == 0:
                     break
+                
+                # Sauvegarder la version CHIFFRÉE (pour la démo)
+                enc_file.write(frame)
+                encrypted_bytes_written += len(frame)
+                
+                # Déchiffrer et sauvegarder la version DÉCHIFFRÉE
                 plaintext = decrypt_chunk(aesgcm, frame)
                 out_file.write(plaintext)
                 bytes_written += len(plaintext)
@@ -119,6 +132,12 @@ def handle_client(
             peer,
             out_path,
             bytes_written,
+        )
+        log.info(
+            "[%s] Encrypted version saved: '%s' (%d bytes).",
+            peer,
+            encrypted_path,
+            encrypted_bytes_written,
         )
 
         conn.sendall(b"OK")

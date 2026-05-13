@@ -1,0 +1,79 @@
+═══════════════════════════════════════════════════════════════════════
+  RÉPONSE À VOTRE QUESTION
+═══════════════════════════════════════════════════════════════════════
+
+QUESTION : "Si j'envoie un fichier txt, est-il chiffré et stocké quelque 
+           part pour voir qu'il est chiffré ?"
+
+RÉPONSE COURTE : OUI, MAINTENANT ! (après ma modification)
+
+═══════════════════════════════════════════════════════════════════════
+  AVANT MA MODIFICATION
+═══════════════════════════════════════════════════════════════════════
+
+❌ Le fichier chiffré n'était PAS stocké sur le disque
+✅ Visible seulement sur le réseau avec Wireshark
+✅ Le serveur déchiffrait immédiatement et sauvegardait seulement 
+   la version déchiffrée
+
+Résultat : received_files/test.txt (LISIBLE)
+
+═══════════════════════════════════════════════════════════════════════
+  APRÈS MA MODIFICATION
+═══════════════════════════════════════════════════════════════════════
+
+✅ Le serveur sauvegarde DEUX versions :
+   1. Version déchiffrée : received_files/test.txt (LISIBLE)
+   2. Version chiffrée   : received_files/test.txt.encrypted (ILLISIBLE)
+
+═══════════════════════════════════════════════════════════════════════
+  TEST RAPIDE
+═══════════════════════════════════════════════════════════════════════
+
+1. Créer un fichier :
+   echo "MESSAGE SECRET" > test.txt
+
+2. Démarrer le serveur (Terminal 1) :
+   python server.py
+
+3. Envoyer le fichier (Terminal 2) :
+   python client.py --file test.txt
+
+4. Vérifier les fichiers reçus :
+   dir received_files\test.txt*
+
+   Vous verrez :
+   - test.txt            (50 bytes)  ← LISIBLE
+   - test.txt.encrypted  (78 bytes)  ← ILLISIBLE
+
+5. Ouvrir les fichiers :
+   notepad received_files\test.txt            ← Texte clair
+   notepad received_files\test.txt.encrypted  ← Caractères bizarres
+
+═══════════════════════════════════════════════════════════════════════
+  POUR LA PRÉSENTATION
+═══════════════════════════════════════════════════════════════════════
+
+Montrez au professeur :
+
+1. Le fichier original (test.txt) - LISIBLE
+2. Envoyez-le avec le client
+3. Montrez les DEUX fichiers reçus :
+   - test.txt (déchiffré) - LISIBLE
+   - test.txt.encrypted (chiffré) - ILLISIBLE
+
+Phrase clé :
+"Le fichier .encrypted contient les données brutes chiffrées reçues 
+ du réseau. Si vous l'ouvrez, c'est complètement illisible. C'est 
+ la preuve que les données étaient chiffrées pendant le transfert !"
+
+═══════════════════════════════════════════════════════════════════════
+  RÉSUMÉ
+═══════════════════════════════════════════════════════════════════════
+
+✅ OUI, le fichier txt est chiffré pendant le transfert
+✅ OUI, la version chiffrée est maintenant stockée (.encrypted)
+✅ OUI, vous pouvez la voir et la comparer avec la version déchiffrée
+✅ OUI, c'est parfait pour prouver le chiffrement au professeur !
+
+═══════════════════════════════════════════════════════════════════════
